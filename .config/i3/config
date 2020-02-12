@@ -6,7 +6,7 @@
 set $mod Mod4
 
 # Fonts (titles and maybe bars)
-font pango:DejaVu Sans Mono 10
+font pango:DejaVu Sans Mono 9
 # font pango:monospace 10
 
 # xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
@@ -35,12 +35,12 @@ set $urgent-bg-color      #E53935
 #               SCREEN DEFINITIONS
 ###################################################
 # i3 gaps
-for_window [class=".*"] border pixel 3
-gaps inner 10
+for_window [class=".*"] border pixel 2
+gaps inner 7
 smart_gaps inverse_outer
 
 # Scale desktop
-exec --no-startup-id xrandr --output eDP --scale 1.40556x1.40556 --panning 1920x1080
+exec --no-startup-id xrandr --output eDP --panning 1775.8x998.4 --scale 1.3x1.3
 
 # Wallpaper
 exec --no-startup-id feh --bg-fill ~/Pictures/Wallpaper/succubus.png
@@ -57,7 +57,7 @@ client.urgent           $urgent-bg-color   $urgent-bg-color   $text-color       
 
 # i3blocks
 bar {
-    font pango:monospace 12
+    font pango:monospace 9
     status_command i3blocks -c ~/.config/i3blocks/config
     colors {
         background $bg-color
