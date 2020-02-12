@@ -15,6 +15,7 @@ function set_environment
             -h|--help)
                 echo "Program usage:"
                 echo "set_environment -p [PROGRAM]"
+                echo "set_environment -s or --scripts"
                 echo ""
                 echo "List of supported programs keywords"
                 echo "gromos"
@@ -23,6 +24,9 @@ function set_environment
                 echo "vmd"
                 echo "theodore"
                 echo "jmol"
+                ;;
+            -s|--scripts)
+                PATH=$PATH:/home/rafael/.compchem_scripts
                 ;;
 	    -p|--program)
                 case $2 in
