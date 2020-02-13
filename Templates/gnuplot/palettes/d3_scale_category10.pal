@@ -1,0 +1,29 @@
+# line styles for ColorBrewer D3
+# for use with qualitative/categorical data
+# provides 10 colors based on d3.scale.categoty10
+# compatible with gnuplot >=4.2
+# author: Rafael Souza
+
+# line styles
+set style line 1  lt 1 lc rgb '#1f77b4' # blue
+set style line 2  lt 1 lc rgb '#ff7f0e' # orange
+set style line 3  lt 1 lc rgb '#2ca02c' # green
+set style line 4  lt 1 lc rgb '#d62728' # red
+set style line 5  lt 1 lc rgb '#9467bd' # purple
+set style line 6  lt 1 lc rgb '#8c564b' # brown
+set style line 7  lt 1 lc rgb '#e377c2' # pink
+set style line 8  lt 1 lc rgb '#7f7f7f' # gray
+set style line 9  lt 1 lc rgb '#bcbd22' # mustard 
+set style line 10 lt 1 lc rgb '#17becf' # cyan
+# palette
+set palette maxcolors 10
+set palette defined ( 0 '#1f77b4',\
+    	    	      1 '#ff7f0e',\
+		              2 '#2ca02c',\
+		              3 '#d62728',\
+		              4 '#9467bd',\
+		              5 '#8c564b',\
+		              6 '#e377c2',\
+		              7 '#7f7f7f',\
+                      8 '#bcbd22',\
+                      9 '#17becf' )
