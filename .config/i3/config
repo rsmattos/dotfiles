@@ -238,25 +238,25 @@ bindsym $mod+Control+End  move container to workspace next ;; workspace next
 #                 KEY BINDINGS
 ###################################################
 # Multimidia keys
-#bindsym XF86AudioRaiseVolume         exec --no-startup-id pactl set-sink-volume 0 +5%  && pkill -RTMIN+10 i3blocks
-#bindsym Shift+XF86AudioRaiseVolume   exec --no-startup-id pactl set-sink-volume 0 +10% && pkill -RTMIN+10 i3blocks
-#bindsym Control+XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +1%  && pkill -RTMIN+10 i3blocks
+bindsym XF86AudioRaiseVolume         exec --no-startup-id pactl set-sink-volume 0 +5%  && pkill -RTMIN+10 i3blocks
+bindsym Shift+XF86AudioRaiseVolume   exec --no-startup-id pactl set-sink-volume 0 +10% && pkill -RTMIN+10 i3blocks
+bindsym Control+XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +1%  && pkill -RTMIN+10 i3blocks
 
-#bindsym XF86AudioLowerVolume         exec --no-startup-id pactl set-sink-volume 0 -5%  && pkill -RTMIN+10 i3blocks
-#bindsym Shift+XF86AudioLowerVolume   exec --no-startup-id pactl set-sink-volume 0 -10% && pkill -RTMIN+10 i3blocks
-#bindsym Control+XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -1%  && pkill -RTMIN+10 i3blocks
+bindsym XF86AudioLowerVolume         exec --no-startup-id pactl set-sink-volume 0 -5%  && pkill -RTMIN+10 i3blocks
+bindsym Shift+XF86AudioLowerVolume   exec --no-startup-id pactl set-sink-volume 0 -10% && pkill -RTMIN+10 i3blocks
+bindsym Control+XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -1%  && pkill -RTMIN+10 i3blocks
 
-#bindsym XF86AudioMute                exec --no-startup-id pactl set-sink-mute 0 toggle && pkill -RTMIN+10 i3blocks
+bindsym XF86AudioMute                exec --no-startup-id pactl set-sink-mute 0 toggle && pkill -RTMIN+10 i3blocks
 
-bindsym XF86AudioRaiseVolume         exec --no-startup-id amixer sset -c 1 Master 5%+ && pkill -RTMIN+10 i3blocks
-bindsym Shift+XF86AudioRaiseVolume   exec --no-startup-id amixer sset -c 1 Master 10%+ && pkill -RTMIN+10 i3blocks
-bindsym Control+XF86AudioRaiseVolume exec --no-startup-id amixer sset -c 1 Master 1%+ && pkill -RTMIN+10 i3blocks
+#bindsym XF86AudioRaiseVolume         exec --no-startup-id amixer sset -c 1 Master 5%+ && pkill -RTMIN+10 i3blocks
+#bindsym Shift+XF86AudioRaiseVolume   exec --no-startup-id amixer sset -c 1 Master 10%+ && pkill -RTMIN+10 i3blocks
+#bindsym Control+XF86AudioRaiseVolume exec --no-startup-id amixer sset -c 1 Master 1%+ && pkill -RTMIN+10 i3blocks
 
-bindsym XF86AudioLowerVolume         exec --no-startup-id amixer sset -c 1 Master 5%- && pkill -RTMIN+10 i3blocks
-bindsym Shift+XF86AudioLowerVolume   exec --no-startup-id amixer sset -c 1 Master 10%- && pkill -RTMIN+10 i3blocks
-bindsym Control+XF86AudioLowerVolume exec --no-startup-id amixer sset -c 1 Master 1%- && pkill -RTMIN+10 i3blocks
+#bindsym XF86AudioLowerVolume         exec --no-startup-id amixer sset -c 1 Master 5%- && pkill -RTMIN+10 i3blocks
+#bindsym Shift+XF86AudioLowerVolume   exec --no-startup-id amixer sset -c 1 Master 10%- && pkill -RTMIN+10 i3blocks
+#bindsym Control+XF86AudioLowerVolume exec --no-startup-id amixer sset -c 1 Master 1%- && pkill -RTMIN+10 i3blocks
 
-bindsym XF86AudioMute                exec --no-startup-id amixer sset -c 1 Master toggle && pkill -RTMIN+10 i3blocks
+#bindsym XF86AudioMute                exec --no-startup-id amixer sset -c 1 Master toggle && pkill -RTMIN+10 i3blocks
 
 bindsym XF86AudioPlay  exec playerctl play-pause  && pkill -RTMIN+10 i3blocks
 bindsym XF86AudioPause exec playerctl play-pause  && pkill -RTMIN+10 i3blocks
