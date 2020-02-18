@@ -10,9 +10,12 @@ case $BLOCK_BUTTON in
 - Scroll to change."
 esac
 
+mute=$(pactl list sinks | grep Mute | awk '{print $2}')
 vol=$(pactl list sinks | grep "Volume" | head -n 1 | awk '{print $5}' | sed 's/[^0-9]*//g')
 
-if [ "$vol" -gt "70" ]; then
+if [ $mute = "yes" ]; then
+	icon="🔇"
+elif [ "$vol" -gt "70" ]; then
 	icon="🔊"
 elif [ "$vol" -lt "30" ]; then
 	icon="🔈"
