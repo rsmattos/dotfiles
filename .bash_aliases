@@ -1,4 +1,5 @@
-alias l='ls -lh'
+
+lias l='ls -lh'
 alias la='ls -lah'
 alias ..='cd ..'
 alias ...='cd ../..'
@@ -26,7 +27,7 @@ function set_environment
                 echo "jmol"
                 ;;
             -s|--scripts)
-                PATH=$PATH:/home/rafael/.compchem_scripts
+                PATH=$PATH:/home/rafael/.compchem_scripts/bin
                 ;;
 	    -p|--program)
                 case $2 in
@@ -70,4 +71,5 @@ function set_environment
 	shift
     done
 }
+
 
