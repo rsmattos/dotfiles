@@ -2,7 +2,7 @@ set nocompatible
 filetype indent plugin on
 syntax on
 
-"===OPTIONS===
+"===OPTIONS=== test
 set hidden
 set wildmenu
 set showcmd
