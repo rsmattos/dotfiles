@@ -1,0 +1,18 @@
+# aliases
+alias l='ls -lh'
+alias la='ls -lah'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias bim='vim'
+alias luscus='/home/rafael/Softwares/luscus/0.3.8/bin/luscus'
+alias zotero='~/Softwares/Zotero/zotero &'
+
+alias drive_sync_down='rclone -v sync GoogleDrive: /data/Rafael/drive'
+alias drive_sync_up='rclone -v sync /data/Rafael/drive GoogleDrive:'
+
+alias cdr='cd /data/Rafael'
+
+# key binding
+bindkey '^[[H' beginning-of-line
+bindkey '^[[F' end-of-line

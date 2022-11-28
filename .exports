@@ -1,0 +1,95 @@
+export SOFTWARES=/home/rafael/Softwares
+export SUBMISSION=~/Scripts/submission
+
+# VMD
+export PATH=$SOFTWARES/VMD/1.9.3/bin:$PATH
+
+# Python and others
+export PATH=/home/rafael/.local/bin:$PATH
+
+# Clean up
+export CLEAN_PATH=$PATH
+export CLEAN_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+export CLEAN_PYTHONPATH=$PYTHONPATH
+export CLEAN_MANPATH=$MANPATH
+
+function set_scripts(){
+    export PATH=/home/rafael/Scripts/compchem_scripts/bin:$PATH
+    export PATH=/home/rafael/Scripts/submission:$PATH
+}
+
+function clear_paths(){
+    export PATH=$CLEAN_PATH
+    export LD_LIBRARY_PATH=$CLEAN_LD_LIBRARY_PATH
+    export PYTHONPATH=$CLEAN_PYTHONPATH
+    export MANPATH=$CLEAN_MANPATH
+}
+
+function set_perl5(){
+    PATH="/home/rafael/perl5/bin${PATH:+:${PATH}}"; export PATH;
+    PERL5LIB="/home/rafael/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+    PERL_LOCAL_LIB_ROOT="/home/rafael/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+    PERL_MB_OPT="--install_base \"/home/rafael/perl5\""; export PERL_MB_OPT;
+    PERL_MM_OPT="INSTALL_BASE=/home/rafael/perl5"; export PERL_MM_OPT;
+}
+
+# OpenMPI 4.1.1
+function set_openmpi.411(){
+    export PATH=$SOFTWARES/openmpi/4.1.1/bin:$PATH
+    export LD_LIBRARY_PATH=$SOFTWARES/openmpi/4.1.1/lib:$LD_LIBRARY_PATH
+}
+
+# ORCA 5.0.1
+function set_orca.501(){
+    export PATH=$SOFTWARES/openmpi/4.1.1/bin:$PATH
+    export LD_LIBRARY_PATH=$SOFTWARES/openmpi/4.1.1/lib:$LD_LIBRARY_PATH
+
+    export ORCA_DIR=$SOFTWARES/ORCA/5.0.1
+    export PATH=$ORCA_DIR:$PATH
+    export LD_LIBRARY_PATH=$ORCA_DIR:$LD_LIBRARY_PATH
+}
+
+# OpenMOLCAS
+function set_openmolcas(){
+    export MOLCAS=$SOFTWARES/OpenMolcas
+    
+    export PATH=$MOLCAS:$MOLCAS/bin:$PATH
+    export LD_LIBRARY_PATH=$MOLCAS/lib:$LD_LIBRARY_PATH
+}
+
+# NewtonX 2.4
+function set_nx.2.4(){
+    export COLUMBUS=$SOFTWARES/Columbus/7.0/Columbus
+    export NX=$SOFTWARES/NX-2.4-B06/bin
+    export PATH=$NX:$PATH
+}
+
+# New NewtonX
+function set_new-nx(){
+    set_perl5
+    export HDF5=/home/rafael/Softwares/HDF5
+
+    export NXHOME=$SOFTWARES/New-NX
+    export CIOVERLAP=~/Softwares/NX-2.4-B06/bin/cioverlap-64
+    export PATH=$NXHOME/bin:$PATH
+}
+
+# Columbus 7.0
+function set_columbus.70(){
+    export COLUMBUS=$SOFTWARES/Columbus/7.0/Columbus
+    export PATH=$COLUMBUS:$PATH
+}
+
+# Turbomole 7.5
+function set_tmole.75(){
+    export TURBODIR=$SOFTWARES/TmoleX/TURBOMOLE
+    export PATH=$TURBODIR/scripts:$PATH
+    export PATH=$TURBODIR/bin/`sysname`:$PATH
+}
+
+# MCTDH
+function set_mctdh.85(){
+    export MCTDH_DIR=$SOFTWARES/MCTDH/85.10
+    . $MCTDH_DIR/install/mctdh.profile
+    if [ -f ~/.mctdhrc ] && [ -t 0 ] ; then . ~/.mctdhrc ; fi
+}
