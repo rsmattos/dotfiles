@@ -1,0 +1,12 @@
+# python compiled files
+*.pyc
+*__pycache__*
+
+# submission auxiliary files
+scripts/submission/log_file
+scripts/submission/nohup.out
+scripts/submission/inpdir
+
+# others
+scripts/compchem_scripts/bin/.vscode/*
+
