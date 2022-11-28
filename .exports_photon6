@@ -1,5 +1,6 @@
-export SOFTWARES=/home/rafael/Softwares
-export SUBMISSION=~/Scripts/submission
+export SOFTWARES=~/Softwares
+export SCRIPTS=~/.dotfiles/scripts
+export SUBMISSION=$SCRIPTS/submission
 
 # VMD
 export PATH=$SOFTWARES/VMD/1.9.3/bin:$PATH
@@ -14,8 +15,8 @@ export CLEAN_PYTHONPATH=$PYTHONPATH
 export CLEAN_MANPATH=$MANPATH
 
 function set_scripts(){
-    export PATH=/home/rafael/Scripts/compchem_scripts/bin:$PATH
-    export PATH=/home/rafael/Scripts/submission:$PATH
+    export PATH=$SCRIPTS/compchem_scripts/bin:$PATH
+    export PATH=$SCRIPTS/submission:$PATH
 }
 
 function clear_paths(){
