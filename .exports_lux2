@@ -1,0 +1,63 @@
+source ~/.dotfiles/.exports_general
+
+#aliases
+alias luscus='$SOFTWARES/Luscus/bin/luscus'
+alias start_globus='~/Softwares/temp/globusconnectpersonal-3.1.6/globusconnectpersonal -start &'
+
+# Molden
+export PATH=$SOFTWARES/Molden/6.9:$PATH
+
+# Setting openMPI
+function set_openmpi.412(){
+    export PATH=$SOFTWARES/OpenMPI/4.1.2/bin:$PATH
+    export LD_LIBRARY_PATH=$SOFTWARES/OpenMPI/4.1.2/lib:$LD_LIBRARY_PATH
+}
+
+# Setting OpenMOLCAS
+function set_openmolcas(){
+    set_openmpi.412
+
+    export MOLCAS=$SOFTWARES/OpenMolcas
+
+    export PATH=$MOLCAS:$MOLCAS/bin:$PATH
+    export LD_LIBRARY_PATH=$MOLCAS/lib:$LD_LIBRARY_PATH
+}
+
+# Setting NewtonX
+function set_nx.24(){
+    export NX=$SOFTWARES/nx/2.4/bin
+
+    export PATH=$NX:$PATH
+}
+
+# Setting TheoDORE 2.4
+function set_theo.24(){
+    export THEODIR=$SOFTWARES/TheoDORE/2.4
+
+    export PATH=$THEODIR/bin:$PATH
+    export PYTHONPATH=$THEODIR:$PYTHONPATH
+}
+
+# Setting Gaussian 16
+function set_g16(){
+    export g16root=/home/rafael/Softwares/g16_a03/cpu/g16
+    export GAUSS_SCRDIR=/data/scrtch
+    export GAUSS_EXEDIR=$g16root/bin:$g16root
+    export PATH=$g16root:$PATH
+}
+
+function set_mrci(){
+    export DFTCIHOME="/data/Rafael/Projects/03-SF/bin/mrci-2018-11-14"
+
+    export KSCIHOME="$DFTCIHOME/kscihome"
+    export PATH="$DFTCIHOME/bin:$PATH"
+    export MPI_ROOT="$DFTCIHOME/platform_mpi"
+    export PATH="$MPI_ROOT/bin:$PATH"
+    export MANPATH="$MPI_ROOT/share/man:$MANPATH"
+}
+
+function set_mctdh.85(){
+    export MCTDH_DIR=/home/rafael/Softwares/mctdh/85.10
+    . $MCTDH_DIR/install/mctdh.profile
+    if [ -f ~/.mctdhrc ] && [ -t 0 ] ; then . ~/.mctdhrc ; fi
+}

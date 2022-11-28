@@ -1,31 +1,10 @@
-export SOFTWARES=~/Softwares
-export SCRIPTS=~/.dotfiles/scripts
-export SUBMISSION=$SCRIPTS/submission
+source ~/.dotfiles/.exports_general
 
-# VMD
-export PATH=$SOFTWARES/VMD/1.9.3/bin:$PATH
+# simple computer specific aliases
+alias luscus='SOFTWARES/luscus/0.3.8/bin/luscus'
+alias zotero='$SOFTWARES/Zotero/zotero &'
 
-# Python and others
-export PATH=/home/rafael/.local/bin:$PATH
-
-# Clean up
-export CLEAN_PATH=$PATH
-export CLEAN_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-export CLEAN_PYTHONPATH=$PYTHONPATH
-export CLEAN_MANPATH=$MANPATH
-
-function set_scripts(){
-    export PATH=$SCRIPTS/compchem_scripts/bin:$PATH
-    export PATH=$SCRIPTS/submission:$PATH
-}
-
-function clear_paths(){
-    export PATH=$CLEAN_PATH
-    export LD_LIBRARY_PATH=$CLEAN_LD_LIBRARY_PATH
-    export PYTHONPATH=$CLEAN_PYTHONPATH
-    export MANPATH=$CLEAN_MANPATH
-}
-
+# setting up perl5 env
 function set_perl5(){
     PATH="/home/rafael/perl5/bin${PATH:+:${PATH}}"; export PATH;
     PERL5LIB="/home/rafael/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
@@ -39,6 +18,9 @@ function set_openmpi.411(){
     export PATH=$SOFTWARES/openmpi/4.1.1/bin:$PATH
     export LD_LIBRARY_PATH=$SOFTWARES/openmpi/4.1.1/lib:$LD_LIBRARY_PATH
 }
+
+# VMD
+export PATH=$SOFTWARES/VMD/1.9.3/bin:$PATH
 
 # ORCA 5.0.1
 function set_orca.501(){
