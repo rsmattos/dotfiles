@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cwd=$(pwd)
-input_file=~SCRIPTS/submission/inpdir
+input_file=$SCRIPTS/submission/inpdir
 
 if [ $# -eq 2 ]
 then
