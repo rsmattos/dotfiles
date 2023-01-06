@@ -5,6 +5,7 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias bim='vim'
+alias nv='nvim'
 
 alias drive_sync_down='rclone -v sync GoogleDrive: /data/Rafael/drive'
 alias drive_sync_up='rclone -v sync /data/Rafael/drive GoogleDrive:'
