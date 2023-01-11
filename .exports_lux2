@@ -61,3 +61,7 @@ function set_mctdh.85(){
     . $MCTDH_DIR/install/mctdh.profile
     if [ -f ~/.mctdhrc ] && [ -t 0 ] ; then . ~/.mctdhrc ; fi
 }
+
+function set_intel(){
+    source /opt/intel/oneapi/setvars.sh
+}
