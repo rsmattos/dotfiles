@@ -65,3 +65,9 @@ function set_mctdh.85(){
 function set_intel(){
     source /opt/intel/oneapi/setvars.sh
 }
+
+function set_fms_mod(){
+    set_intel
+    alias fms=/data/Rafael/Projects/01-QDCT/01-softwares/modified_fms/trunk/bin/FMS.zero.e
+}
+
