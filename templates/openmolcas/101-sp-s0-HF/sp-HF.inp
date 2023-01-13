@@ -1,0 +1,14 @@
+*SCnergy for CH4 at fixed nuclear geometry.
+*File: SCF.energy.CH4
+*
+&GATEWAY
+  Title = ch4.molecule
+  coord = ch4.xyz
+  basis = ANO-S-mb
+  group = C1
+
+&SEWARD
+&SCF
+
+&GRID_IT
+  ALL

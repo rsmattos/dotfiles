@@ -1,0 +1,32 @@
+*CASSCF SA calculation on five singlet excited states in acrolein
+*File CASSCF.excited.acrolein
+*
+&GATEWAY
+  Title = Acrolein molecule
+  coord = acrolein.xyz
+  basis = ANO-S-mb
+  group = c1
+
+&SEWARD
+
+&SCF
+
+&RASSCF
+  FileOrb = CASSCF.GvOrb
+  Spin = 1
+  CiRoot = 5 5 1
+
+&GRID_IT
+  All
+
+&CASPT2
+  Multistate = 5 1 2 3 4 5
+  Imaginary = 0.2
+
+>>COPY $Project.JobMix JOB001
+
+&RASSI
+  Nr of JobIph
+  1 5
+  1 2 3 4 5
+  EJob
