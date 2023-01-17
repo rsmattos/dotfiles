@@ -1,0 +1,12 @@
+*SCF minimum energy optimization for H2O.
+*
+&GATEWAY
+  coord = h2o.xyz
+  basis = ANO-S-mb
+  group = C1
+
+>>> Do while
+    &SEWARD
+    &SCF
+    &SLAPAF
+>>> EndDo

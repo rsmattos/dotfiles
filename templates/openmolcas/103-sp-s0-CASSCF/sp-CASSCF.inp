@@ -1,0 +1,24 @@
+*SCnergy for CH4 at fixed nuclear geometry.
+*File: SCF.energy.CH4
+*
+&GATEWAY
+  coord = ch4.xyz
+  basis = ANO-S-mb
+  group = C1
+
+&SEWARD
+&SCF
+
+&RASSCF
+  LumOrb
+  Spin = 1
+  Nactel = 8 0 0
+  Inactive = 1
+  Ras2 = 8
+
+&CASPT2
+  Multistate = 1 1
+
+&GRID_IT
+  All
+

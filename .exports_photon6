@@ -1,7 +1,7 @@
 source ~/.dotfiles/.exports_general
 
 # simple computer specific aliases
-alias luscus='SOFTWARES/luscus/0.3.8/bin/luscus'
+alias luscus='$SOFTWARES/luscus/0.3.8/bin/luscus'
 alias zotero='$SOFTWARES/Zotero/zotero &'
 
 # setting up perl5 env
