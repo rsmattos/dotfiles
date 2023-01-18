@@ -211,6 +211,7 @@ def adiabat_T3(H, dH):
 ################### READING TEST DATA
 #### Output from FMS90
 def read_fms90(path_to_data = '.', traj='1'):
+    A2bohr = 1.88973
     geometry_file = path_to_data+f'/positions.{traj}.xyz'
     energy_file = path_to_data+f'/PotEn.{traj}'
     coupling_file = path_to_data+f'/Coup.{traj}'
@@ -219,11 +220,6 @@ def read_fms90(path_to_data = '.', traj='1'):
     os.system(f'grep "H    " {geometry_file} >> tmp_geom')
     os.system(f'paste tmp_geom {energy_file} {coupling_file} > tmp')
 
-    # os.system(f'head tmp_geom')
-    # os.system(f'head tmp')
-    # os.system(f'head {energy_file}')
-    # os.system(f'head {coupling_file}')
-
     test_df = pd.read_csv('tmp', sep='\s+', 
                            usecols=[1, 4, 5, 6, 11, 12],
                            names=['pos', 'time', 'en_S0', 'en_S1', 'coup_21', 'coup_12'],
@@ -231,14 +227,17 @@ def read_fms90(path_to_data = '.', traj='1'):
 
     os.system(f'rm tmp_geom tmp')
 
+    # choose the non zero coupling to keep
     if np.max(np.abs(test_df['coup_12'])) > np.max(np.abs(test_df['coup_21'])):
         coup_idx = 'coup_12'
     else:
         coup_idx = 'coup_21'
 
     test_df['coup'] = test_df[coup_idx]
-
     test_df.drop(columns=['coup_12', 'coup_21'], inplace=True)
+
+    # convert the positions to bohr
+    test_df['pos'] = test_df['pos']*A2bohr
 
     return test_df
 
@@ -278,8 +277,7 @@ def create_reference(x_min, x_max, model='tully1', step_size=0.1):
 # creates a dataframe with the reference values in the range provided
 # ideally the same range as the external values
 
-    A2bohr = 1.88973
-    positions = np.arange(x_min*A2bohr, x_max*A2bohr, step_size)
+    positions = np.arange(x_min, x_max, step_size)
 
     en_s0 = []
     en_s1 = []
@@ -315,7 +313,6 @@ def test_values(out_path, external_df, amount=3, model='tully1',
 # or the sample_points list with the indices of the desired positions
 #    test_values(external_df, sample_points=[1, 2, 3, 4])
 
-    A2bohr = 1.88973
     problem_points = []
 
     if not sample_points:
@@ -331,7 +328,7 @@ def test_values(out_path, external_df, amount=3, model='tully1',
             en_s1_ex = values['en_S1']
             coup_ex = values['coup']
 
-            en_s0_ref, en_s1_ref, _, _, coup_ref = calculate_values_at(pos_ex*A2bohr, model)
+            en_s0_ref, en_s1_ref, _, _, coup_ref = calculate_values_at(pos_ex, model)
 
             en_s0_diff = en_s0_ref - en_s0_ex
             en_s1_diff = en_s1_ref - en_s1_ex
@@ -366,24 +363,22 @@ def plot_comparison(reference_df, test_df, out_path, only_test=False):
 # if the only_test option is true, will only plot the values of the test data
 # if it is false, will plot the reference in the same image as test data
 
-    A2bohr = 1.88973
-
     plt.plot(test_df['pos'], test_df['en_S0'], label='S0 test')
     plt.plot(test_df['pos'], test_df['en_S1'], label='S1 test')
     if not only_test:
-        plt.plot(reference_df['pos']/A2bohr, reference_df['en_S0'], label='S0 ref')
-        plt.plot(reference_df['pos']/A2bohr, reference_df['en_S1'], label='S1 ref')
+        plt.plot(reference_df['pos'], reference_df['en_S0'], label='S0 ref')
+        plt.plot(reference_df['pos'], reference_df['en_S1'], label='S1 ref')
     plt.ylabel('energy (Eh)')
-    plt.xlabel('potision (Angstrom)')
+    plt.xlabel('potision (bohr)')
     plt.legend()
     plt.savefig(f'{out_path}/potential_energy.png')
     plt.clf()
 
     plt.plot(test_df['pos'], test_df['coup'], label='coupling fms90')
     if not only_test:
-        plt.plot(reference_df['pos']/A2bohr, reference_df['coup'], label='coupling ref')
+        plt.plot(reference_df['pos'], reference_df['coup'], label='coupling ref')
     plt.ylabel('coupling')
-    plt.xlabel('potision (Angstrom)')
+    plt.xlabel('potision (bohr)')
     plt.legend()
     plt.savefig(f'{out_path}/coupling.png')
 
