@@ -257,8 +257,8 @@ def read_mctdh(path_to_data = '.', pes_file = 'pes.dat'):
         for line in file[size:-1]:
             en_s1.append(line.split()[1])
 
-    return pd.DataFrame([pos, en_s0, en_s1]).T. \
-              rename(columns={0:'pos', 1:'en_S0', 2: 'en_s1'})
+    return pd.DataFrame([pos, en_s0, en_s1], dtype=float).T. \
+              rename(columns={0:'pos', 1:'en_S0', 2: 'en_S1'})
 
 def read_test_data(program, path_to_data = '.', traj = '1', pes_file = 'pes.dat'):
     if program == 'fms90':
@@ -305,56 +305,71 @@ def create_reference(x_min, x_max, model='tully1', step_size=0.1):
 
     return referende_df
 
-def test_values(out_path, external_df, amount=3, model='tully1', 
+def test_values(out_path, test_df, amount=3, model='tully1', 
                 sample_points=False, abs_coup=False):
 # chooses random values from the external dataframe to compare with the refernece data
 # one can give an amount to be randomly selected,
-#    test-values(external_df, 10)
+#    test-values(test_df, 10)
 # or the sample_points list with the indices of the desired positions
-#    test_values(external_df, sample_points=[1, 2, 3, 4])
+#    test_values(test_df, sample_points=[1, 2, 3, 4])
 
     problem_points = []
 
+    # choose whether to select random points for comparison or use the list given
     if not sample_points:
-        sample_points = np.sort(random.sample(range(external_df.shape[0]), amount))
+        sample_points = np.sort(random.sample(range(test_df.shape[0]), amount))
+
+    # check if the test data has coupling vlaues
+    if 'coup' in test_df.keys():
+        use_coup = True
+    else:
+        use_coup = False
 
     with open(out_path+'/comparison.log', 'a') as f:
         f.write(f'points to be sampled: \n {sample_points} \n \n')
 
         for point in sample_points:
-            values = external_df.iloc[point]
+            values = test_df.iloc[point]
             pos_ex = values['pos']
             en_s0_ex = values['en_S0']
             en_s1_ex = values['en_S1']
-            coup_ex = values['coup']
 
             en_s0_ref, en_s1_ref, _, _, coup_ref = calculate_values_at(pos_ex, model)
 
             en_s0_diff = en_s0_ref - en_s0_ex
             en_s1_diff = en_s1_ref - en_s1_ex
-            if abs_coup:
-                coup_diff = abs(coup_ref) - abs(coup_ex)
-            else:
-                coup_diff = coup_ref - coup_ex
 
             if abs(en_s0_diff) > 1e-6:
                 problem_points.append(pos_ex)
             elif abs(en_s1_diff) > 1e-6:
                 problem_points.append(pos_ex)
-            elif abs(coup_diff) > 1e-5:
-                problem_points.append(pos_ex)
 
-            f.write(f'for position {pos_ex} A, the values from the reference data and external data are: \n')
-            f.write(f'en_S0(Eh): {en_s0_ref} \t {en_s0_ex}, with the difference: {en_s0_diff} \n')
-            f.write(f'en_S1(Eh): {en_s1_ref} \t {en_s1_ex}, with the difference: {en_s1_diff} \n')
-            f.write(f'coup:      {coup_ref} \t {coup_ex}, with the difference: {coup_diff} \n \n')
+            f.write(f'\n for position {pos_ex} A, ')
+            f.write(f'the values from the reference data and external data are: \n')
+            f.write(f'en_S0(Eh): {en_s0_ref} \t {en_s0_ex}, ')
+            f.write(f'with the difference: {en_s0_diff} \n')
+            f.write(f'en_S1(Eh): {en_s1_ref} \t {en_s1_ex}, ')
+            f.write(f'with the difference: {en_s1_diff} \n')
+
+            if use_coup:
+                coup_ex = values['coup']
+
+                if abs_coup:
+                    coup_diff = abs(coup_ref) - abs(coup_ex)
+                else:
+                    coup_diff = coup_ref - coup_ex
+
+                if abs(coup_diff) > 1e-5:
+                    problem_points.append(pos_ex)
+
+                f.write(f'coup:      {coup_ref} \t {coup_ex}, with the difference: {coup_diff} \n')
 
         if len(problem_points) > 0:
-            f.write('WARNING, significant differences between reference and test data. \n')
+            f.write('\n WARNING, significant differences between reference and test data. \n')
             f.write(f'The positions (Angs) that resulted in different values are \n')
             f.write(f'{problem_points} \n')
         else:
-            f.write('SUCCESS, there is little or no difference between the reference and test data \n')
+            f.write('\n SUCCESS, there is little or no difference between the reference and test data \n')
 
     return
 
@@ -362,7 +377,6 @@ def plot_comparison(reference_df, test_df, out_path, only_test=False):
 # make a plot of the energies in a file and coupling in another
 # if the only_test option is true, will only plot the values of the test data
 # if it is false, will plot the reference in the same image as test data
-
     plt.plot(test_df['pos'], test_df['en_S0'], label='S0 test')
     plt.plot(test_df['pos'], test_df['en_S1'], label='S1 test')
     if not only_test:
@@ -372,23 +386,25 @@ def plot_comparison(reference_df, test_df, out_path, only_test=False):
     plt.xlabel('potision (bohr)')
     plt.legend()
     plt.savefig(f'{out_path}/potential_energy.png')
-    plt.clf()
 
-    plt.plot(test_df['pos'], test_df['coup'], label='coupling fms90')
-    if not only_test:
-        plt.plot(reference_df['pos'], reference_df['coup'], label='coupling ref')
-    plt.ylabel('coupling')
-    plt.xlabel('potision (bohr)')
-    plt.legend()
-    plt.savefig(f'{out_path}/coupling.png')
+    # check if the test data has coupling vlaues
+    if 'coup' in test_df.keys():
+        plt.clf()
+        plt.plot(test_df['pos'], test_df['coup'], label='coupling fms90')
+        if not only_test:
+            plt.plot(reference_df['pos'], reference_df['coup'], label='coupling ref')
+        plt.ylabel('coupling')
+        plt.xlabel('potision (bohr)')
+        plt.legend()
+        plt.savefig(f'{out_path}/coupling.png')
 
 if __name__ == '__main__':
     # input data that should be read from input file
-    inp_path = '/data/Rafael/test/fms90/fms_tully_11'
-    out_path = '/data/Rafael/test/fms90/corrected_tully1'
+    inp_path = '/data/Rafael/test/mctdh/tully_1'
+    out_path = '/data/Rafael/test/mctdh/potential_validation/tully_1'
     trajectory = '1'
     model = 'tully1'
-    program = 'fms90'
+    program = 'mctdh'
 
     with open(out_path+'/comparison.log', 'w') as f:
         f.write('Analytical potential comparison for model: \n')
@@ -419,5 +435,4 @@ if __name__ == '__main__':
 #TODO
 # create template input file, to be filled to use
 # read from input file
-# read MCTDH results
 # read NX results
