@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import random
 import pandas as pd
 import os
+import sys
 
 ################### MODELS
 def adiabat_general(H, dH):
@@ -260,11 +261,11 @@ def read_mctdh(path_to_data = '.', pes_file = 'pes.dat'):
     return pd.DataFrame([pos, en_s0, en_s1], dtype=float).T. \
               rename(columns={0:'pos', 1:'en_S0', 2: 'en_S1'})
 
-def read_test_data(program, path_to_data = '.', traj = '1', pes_file = 'pes.dat'):
-    if program == 'fms90':
-        return read_fms90(path_to_data, traj)
-    elif program == 'mctdh':
-        return read_mctdh(path_to_data, pes_file)
+def read_test_data(params):
+    if params.program == 'fms90':
+        return read_fms90(params.inp_path, params.trajectory)
+    elif params.program == 'mctdh':
+        return read_mctdh(params.inp_path, params.pes_file)
 
     else:
         print(f'program not supported, please choose among:')
@@ -398,38 +399,110 @@ def plot_comparison(reference_df, test_df, out_path, only_test=False):
         plt.legend()
         plt.savefig(f'{out_path}/coupling.png')
 
+class input_params:
+    def __init__(self):
+        self.program = 'fms90'
+        self.inp_path = '.'
+        self.out_path = '.'
+        self.model = 'tully1'
+        self.trajectory = '1'
+        self.pes_file = 'pes.dat'
+        self.test_amount = 100
+
+def read_input(input_file = 'tests_models.inp'):
+    p = input_params()
+
+    if os.path.isfile(input_file):
+        with open(input_file, 'r') as f:
+            file = f.readlines()
+
+            for line in file:
+                if len(line.split()) == 0:
+                    continue
+                elif line.split()[0] == 'program':
+                    print
+                    p.program = line.split()[2]
+                elif line.split()[0] == 'inp_path':
+                    p.inp_path = line.split()[2]
+                elif line.split()[0] == 'out_path':
+                    p.out_path = line.split()[2]
+                elif line.split()[0] == 'trajectory':
+                    p.trajectory = line.split()[2]
+                elif line.split()[0] == 'model':
+                    p.model = line.split()[2]
+                elif line.split()[0] == 'pes_file':
+                    p.pes_file = line.split()[2]
+                elif line.split()[0] == 'test_amount':
+                    p.test_amount = int(line.split()[2])
+
+    else:
+        with open(input_file, 'w') as f:
+            f.write('######################################################################\n')
+            f.write('# Input for the program to read the energies, gradient and coupling values\n')
+            f.write('# calculated for analytical one dimensional problems with two states.\n')
+            f.write('# the keyword and values should be separated by spaces and equal sign as\n')
+            f.write('# as in template.\n')
+            f.write('# The template has all possible options with their default values.\n')
+
+            f.write('\n # General options, always used\n')
+            f.write(f'program = {p.program}\n')
+            f.write(f'inp_path = {p.inp_path}\n')
+            f.write(f'out_path = {p.out_path}\n')
+            f.write(f'model = {p.model}\n')
+            f.write('number of points to randomly test')
+            f.write(f'test_amount = {p.test_amount}\n')
+
+            f.write('\n # FMS90 specific options\n')
+            f.write('# index of the trajectory to use, usually 1 because it has mor points.\n')
+            f.write(f'trajectory = {p.trajectory}\n')
+
+            f.write('\n # MTCDH specific options\n')
+            f.write('# name of the file with the pes values.\n')
+            f.write(f'pes_file = {p.pes_file}\n')
+
+        exit()
+    return p
+
 if __name__ == '__main__':
     # input data that should be read from input file
-    inp_path = '/data/Rafael/test/mctdh/tully_1'
-    out_path = '/data/Rafael/test/mctdh/potential_validation/tully_1'
-    trajectory = '1'
-    model = 'tully1'
-    program = 'mctdh'
+    # inp_path = '/data/Rafael/test/mctdh/tully_3'
+    # out_path = '/data/Rafael/test/mctdh/potential_validation/tully_3'
+    # trajectory = '1'
+    # model = 'tully3'
+    # program = 'mctdh'
 
-    with open(out_path+'/comparison.log', 'w') as f:
-        f.write('Analytical potential comparison for model: \n')
-        f.write(f'{model} \n')
-        f.write(f'The input information are located in the folder: \n')
-        f.write(f'{inp_path} \n')
-        f.write(f'The values taken are from trajectory: {trajectory} \n \n')
+    if len(sys.argv) == 1:
+        params = read_input()
+    else:
+        params = read_input(sys.argv[1])
+
+    with open(params.out_path+'/comparison.log', 'w') as f:
+        f.write('Analytical potential comparison for model:\n')
+        f.write(f'{params.model}\n')
+        f.write(f'from the program {params.program}\n')
+        f.write(f'The input information are located in the folder:\n')
+        f.write(f'{params.inp_path}\n')
+        if params.program == 'fms90':
+            f.write(f'The values taken are from trajectory: {params.trajectory}\n')
+        f.write('\n')
 
     # I want to read the external data from the given path
-    test_df =  read_test_data(program, path_to_data=inp_path, traj=trajectory)
+    test_df =  read_test_data(params)
 
     # print(test_df)
     # create the reference dataframe for comparison plots
     xmin = np.min(test_df['pos'])
     xmax = np.max(test_df['pos'])
 
-    reference_df = create_reference(xmin, xmax, model)
+    reference_df = create_reference(xmin, xmax, params.model)
 
     # chose random points to catch any error
     # can also be an equal distribution of points so we sweep the whole range
     # save the point comparison in a text file
-    test_values(out_path, test_df, 100, model)
+    test_values(params.out_path, test_df, params.test_amount, params.model)
 
     # save the plots of energies and coupling on differenf files, with both methods
-    plot_comparison(reference_df, test_df, out_path)
+    plot_comparison(reference_df, test_df, params.out_path)
 
 
 #TODO
