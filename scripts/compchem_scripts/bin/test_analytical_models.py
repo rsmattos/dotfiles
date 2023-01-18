@@ -233,7 +233,36 @@ def read_fms90(path_to_data = '.', traj='1'):
 
     return test_df
 
+def read_mctdh(path_to_data = '.', pes_file = 'pes.dat'):
+    pos = []
+    en_s0 = []
+    en_s1 = []
 
+    with open(f'{path_to_data}/{pes_file}', 'r') as f:
+        file = f.readlines()
+
+        size = int(len(file)/2)
+
+        for line in file[:size-1]:
+            pos.append(line.split()[0])
+            en_s0.append(line.split()[1])
+        for line in file[size:-1]:
+            en_s1.append(line.split()[1])
+
+    return pd.DataFrame([pos, en_s0, en_s1]).T. \
+              rename(columns={0:'pos', 1:'en_S0', 2: 'en_s1'})
+
+def read_test_data(program, path_to_data = '.', traj = '1', pes_file = 'pes.dat'):
+    if program == 'fms90':
+        return read_fms90(path_to_data, traj)
+    elif program == 'mctdh':
+        return read_mctdh(path_to_data, pes_file)
+
+    else:
+        print(f'program not supported, please choose among:')
+        print(f'fms90')
+        print(f'mctdh')
+        return
 
 ################### COMPARISON
 def create_reference(x_min, x_max, model='tully1', step_size=0.1):
@@ -358,10 +387,11 @@ def plot_comparison(reference_df, test_df, coup_idx, out_path, only_test=False):
 
 if __name__ == '__main__':
     # input data that should be read from input file
-    inp_path = '/data/Rafael/test/fms90/fms_tully_13'
-    out_path = '/data/Rafael/test/fms90/corrected_tully3'
+    inp_path = '/data/Rafael/test/mctdh/tully_1'
+    out_path = '/data/Rafael/test/mctdh/potential_validation/tully_1'
     trajectory = '1'
-    model = 'tully3'
+    model = 'tully1'
+    program = 'mctdh'
 
     with open(out_path+'/comparison.log', 'w') as f:
         f.write('Analytical potential comparison for model: \n')
@@ -371,21 +401,21 @@ if __name__ == '__main__':
         f.write(f'The values taken are from trajectory: {trajectory} \n \n')
 
     # I want to read the external data from the given path
-    test_df =  read_fms90(inp_path, trajectory)
-
+    test_df =  read_test_data(program, path_to_data=inp_path)
+    print(test_df)
     # create the reference dataframe for comparison plots
-    xmin = np.min(test_df['pos'])
-    xmax = np.max(test_df['pos'])
+    # xmin = np.min(test_df['pos'])
+    # xmax = np.max(test_df['pos'])
 
-    reference_df = create_reference(xmin, xmax, model)
+    # reference_df = create_reference(xmin, xmax, model)
 
-    # chose random points to catch any error
-    # can also be an equal distribution of points so we sweep the whole range
-    # save the point comparison in a text file
-    coup_idx = test_values(out_path, test_df, 100, model)
+    # # chose random points to catch any error
+    # # can also be an equal distribution of points so we sweep the whole range
+    # # save the point comparison in a text file
+    # coup_idx = test_values(out_path, test_df, 100, model)
 
-    # save the plots of energies and coupling on differenf files, with both methods
-    plot_comparison(reference_df, test_df, coup_idx, out_path)
+    # # save the plots of energies and coupling on differenf files, with both methods
+    # plot_comparison(reference_df, test_df, coup_idx, out_path)
 
 
 #TODO
