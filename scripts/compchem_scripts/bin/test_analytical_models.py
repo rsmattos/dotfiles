@@ -213,9 +213,9 @@ def adiabat_T3(H, dH):
 
 # Short 1D SBH
 def adiabat_short_sbh(x):
-    eps = 0.3
+    eps = 0.03
     nu0 = 0.05
-    mass = 1
+    mass = 1822.888515
 
     freq = 4000/219474.63068
     coup = 0.7757824733
@@ -307,11 +307,11 @@ def read_test_data(params):
         return
 
 ################### COMPARISON
-def create_reference(x_min, x_max, model='tully1', step_size=0.1):
+def create_reference(params, step_size=0.1):
 # creates a dataframe with the reference values in the range provided
 # ideally the same range as the external values
 
-    positions = np.arange(x_min, x_max, step_size)
+    positions = np.arange(params.xmin, params.xmax, step_size)
 
     en_s0 = []
     en_s1 = []
@@ -320,7 +320,7 @@ def create_reference(x_min, x_max, model='tully1', step_size=0.1):
     coup  = []
 
     for x in positions:
-        en_s0_tmp, en_s1_tmp, grad_s0_tmp, grad_s1_tmp, coup_tmp = calculate_values_at(x, model)
+        en_s0_tmp, en_s1_tmp, grad_s0_tmp, grad_s1_tmp, coup_tmp = calculate_values_at(x, params.model)
 
         en_s0.append(en_s0_tmp)
         en_s1.append(en_s1_tmp)
@@ -335,12 +335,13 @@ def create_reference(x_min, x_max, model='tully1', step_size=0.1):
     referende_df['en_S1'] = en_s1
     referende_df['grad_S0'] = grad_s0
     referende_df['grad_S1'] = grad_s1
-    referende_df['coup'] = coup
-
+    if params.abs_coup:
+        referende_df['coup'] = np.abs(coup)
+    else:
+        referende_df['coup'] = coup
     return referende_df
 
-def test_values(out_path, test_df, amount=3, model='tully1', 
-                sample_points=False, abs_coup=False):
+def test_values(out_path, test_df, params, sample_points=False):
 # chooses random values from the external dataframe to compare with the refernece data
 # one can give an amount to be randomly selected,
 #    test-values(test_df, 10)
@@ -349,9 +350,12 @@ def test_values(out_path, test_df, amount=3, model='tully1',
 
     problem_points = []
 
+    if test_df.shape[0] < params.test_amount:
+        params.test_amount = int(test_df.shape[0]/2)
+
     # choose whether to select random points for comparison or use the list given
     if not sample_points:
-        sample_points = np.sort(random.sample(range(test_df.shape[0]), amount))
+        sample_points = np.sort(random.sample(range(test_df.shape[0]), params.test_amount))
 
     # check if the test data has coupling vlaues
     if 'coup' in test_df.keys():
@@ -368,7 +372,7 @@ def test_values(out_path, test_df, amount=3, model='tully1',
             en_s0_ex = values['en_S0']
             en_s1_ex = values['en_S1']
 
-            en_s0_ref, en_s1_ref, _, _, coup_ref = calculate_values_at(pos_ex, model)
+            en_s0_ref, en_s1_ref, _, _, coup_ref = calculate_values_at(pos_ex, params.model)
 
             en_s0_diff = en_s0_ref - en_s0_ex
             en_s1_diff = en_s1_ref - en_s1_ex
@@ -387,11 +391,10 @@ def test_values(out_path, test_df, amount=3, model='tully1',
 
             if use_coup:
                 coup_ex = values['coup']
+                if params.abs_coup:
+                    coup_ref = np.abs(coup_ref)
 
-                if abs_coup:
-                    coup_diff = abs(coup_ref) - abs(coup_ex)
-                else:
-                    coup_diff = coup_ref - coup_ex
+                coup_diff = coup_ref - coup_ex
 
                 if abs(coup_diff) > 1e-5:
                     problem_points.append(pos_ex)
@@ -446,37 +449,40 @@ class input_params:
         self.test_amount = 100
         self.xmin = -10
         self.xmax = 10
+        self.abs_coup = False
 
-def read_input(input_file = 'tests_models.inp'):
-    p = input_params()
+def look_keywords(input_file, p):
+    with open(input_file, 'r') as f:
+        file = f.readlines()
 
-    if os.path.isfile(input_file):
-        with open(input_file, 'r') as f:
-            file = f.readlines()
+        for line in file:
+            if len(line.split()) == 0:
+                continue
+            elif line.split()[0] == 'program':
+                p.program = line.split()[2]
+            elif line.split()[0] == 'inp_path':
+                p.inp_path = line.split()[2]
+            elif line.split()[0] == 'out_path':
+                p.out_path = line.split()[2]
+            elif line.split()[0] == 'trajectory':
+                p.trajectory = line.split()[2]
+            elif line.split()[0] == 'model':
+                p.model = line.split()[2]
+            elif line.split()[0] == 'pes_file':
+                p.pes_file = line.split()[2]
+            elif line.split()[0] == 'test_amount':
+                p.test_amount = int(line.split()[2])
+            elif line.split()[0] == 'xmin':
+                p.xmin = int(line.split()[2])
+            elif line.split()[0] == 'xmax':
+                p.xmax = int(line.split()[2])
 
-            for line in file:
-                if len(line.split()) == 0:
-                    continue
-                elif line.split()[0] == 'program':
-                    p.program = line.split()[2]
-                elif line.split()[0] == 'inp_path':
-                    p.inp_path = line.split()[2]
-                elif line.split()[0] == 'out_path':
-                    p.out_path = line.split()[2]
-                elif line.split()[0] == 'trajectory':
-                    p.trajectory = line.split()[2]
-                elif line.split()[0] == 'model':
-                    p.model = line.split()[2]
-                elif line.split()[0] == 'pes_file':
-                    p.pes_file = line.split()[2]
-                elif line.split()[0] == 'test_amount':
-                    p.test_amount = int(line.split()[2])
-                elif line.split()[0] == 'xmin':
-                    p.xmin = int(line.split()[2])
-                elif line.split()[0] == 'xmax':
-                    p.xmax = int(line.split()[2])                
+    if p.program == 'fms90':
+        p.abs_coup = True
 
-    else:
+    return p      
+
+def print_input_template(input_file, p):
         with open(input_file, 'w') as f:
             f.write('######################################################################\n')
             f.write('# Input for the program to read the energies, gradient and coupling values\n')
@@ -486,6 +492,8 @@ def read_input(input_file = 'tests_models.inp'):
             f.write('# The template has all possible options with their default values.\n')
 
             f.write('\n # General options, always used\n')
+            f.write(f'# Options of program that can be read:\n')
+            f.write(f'# none, fms90, mctdh\n')
             f.write(f'program = {p.program}\n')
             f.write(f'inp_path = {p.inp_path}\n')
             f.write(f'out_path = {p.out_path}\n')
@@ -506,8 +514,15 @@ def read_input(input_file = 'tests_models.inp'):
             f.write('# name of the file with the pes values.\n')
             f.write(f'pes_file = {p.pes_file}\n')
 
+def read_input(input_file = 'tests_models.inp'):
+    p = input_params()
+
+    if os.path.isfile(input_file):
+        return look_keywords(input_file, p)
+            
+    else:
+        print_input_template(input_file, p)
         exit()
-    return p
 
 if __name__ == '__main__':
     # input data that should be read from input file
@@ -533,8 +548,6 @@ if __name__ == '__main__':
         f.write('\n')
 
     if params.program == 'none':
-        xmin = params.xmin
-        xmax = params.xmax
         only_ref = True
         test_df = {'coup': 0}
     
@@ -545,16 +558,16 @@ if __name__ == '__main__':
 
         # print(test_df)
         # create the reference dataframe for comparison plots
-        xmin = np.min(test_df['pos'])
-        xmax = np.max(test_df['pos'])
+        params.xmin = np.min(test_df['pos'])
+        params.xmax = np.max(test_df['pos'])
 
-    reference_df = create_reference(xmin, xmax, params.model)
+    reference_df = create_reference(params)
 
     # chose random points to catch any error
     # can also be an equal distribution of points so we sweep the whole range
     # save the point comparison in a text file
     if not params.program == 'none':
-        test_values(params.out_path, test_df, params.test_amount, params.model)
+        test_values(params.out_path, test_df, params)
 
     # save the plots of energies and coupling on differenf files, with both methods
     plot_comparison(reference_df, test_df, params.out_path, only_ref=only_ref)
