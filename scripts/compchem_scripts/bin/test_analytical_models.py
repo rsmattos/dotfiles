@@ -213,7 +213,7 @@ def adiabat_T3(H, dH):
 
 # Short 1D SBH
 def adiabat_short_sbh(x):
-    eps = 0.03
+    eps = 0.3
     nu0 = 0.05
     mass = 1
 
@@ -301,6 +301,7 @@ def read_test_data(params):
 
     else:
         print(f'program not supported, please choose among:')
+        print(f'none')
         print(f'fms90')
         print(f'mctdh')
         return
@@ -406,12 +407,14 @@ def test_values(out_path, test_df, amount=3, model='tully1',
 
     return
 
-def plot_comparison(reference_df, test_df, out_path, only_test=False):
+def plot_comparison(reference_df, test_df, out_path, only_test=False, only_ref=False):
 # make a plot of the energies in a file and coupling in another
 # if the only_test option is true, will only plot the values of the test data
-# if it is false, will plot the reference in the same image as test data
-    plt.plot(test_df['pos'], test_df['en_S0'], label='S0 test')
-    plt.plot(test_df['pos'], test_df['en_S1'], label='S1 test')
+# if the only_ref option is true, will only plot the vlaues of the reference data
+# if they are false, will plot the reference in the same image as test data
+    if not only_ref:
+        plt.plot(test_df['pos'], test_df['en_S0'], label='S0 test')
+        plt.plot(test_df['pos'], test_df['en_S1'], label='S1 test')
     if not only_test:
         plt.plot(reference_df['pos'], reference_df['en_S0'], label='S0 ref')
         plt.plot(reference_df['pos'], reference_df['en_S1'], label='S1 ref')
@@ -423,7 +426,8 @@ def plot_comparison(reference_df, test_df, out_path, only_test=False):
     # check if the test data has coupling vlaues
     if 'coup' in test_df.keys():
         plt.clf()
-        plt.plot(test_df['pos'], test_df['coup'], label='coupling fms90')
+        if not only_ref:
+            plt.plot(test_df['pos'], test_df['coup'], label='coupling fms90')
         if not only_test:
             plt.plot(reference_df['pos'], reference_df['coup'], label='coupling ref')
         plt.ylabel('coupling')
@@ -433,13 +437,15 @@ def plot_comparison(reference_df, test_df, out_path, only_test=False):
 
 class input_params:
     def __init__(self):
-        self.program = 'fms90'
+        self.program = 'none'
         self.inp_path = '.'
         self.out_path = '.'
         self.model = 'tully1'
         self.trajectory = '1'
         self.pes_file = 'pes.dat'
         self.test_amount = 100
+        self.xmin = -10
+        self.xmax = 10
 
 def read_input(input_file = 'tests_models.inp'):
     p = input_params()
@@ -452,7 +458,6 @@ def read_input(input_file = 'tests_models.inp'):
                 if len(line.split()) == 0:
                     continue
                 elif line.split()[0] == 'program':
-                    print
                     p.program = line.split()[2]
                 elif line.split()[0] == 'inp_path':
                     p.inp_path = line.split()[2]
@@ -466,6 +471,10 @@ def read_input(input_file = 'tests_models.inp'):
                     p.pes_file = line.split()[2]
                 elif line.split()[0] == 'test_amount':
                     p.test_amount = int(line.split()[2])
+                elif line.split()[0] == 'xmin':
+                    p.xmin = int(line.split()[2])
+                elif line.split()[0] == 'xmax':
+                    p.xmax = int(line.split()[2])                
 
     else:
         with open(input_file, 'w') as f:
@@ -480,9 +489,14 @@ def read_input(input_file = 'tests_models.inp'):
             f.write(f'program = {p.program}\n')
             f.write(f'inp_path = {p.inp_path}\n')
             f.write(f'out_path = {p.out_path}\n')
+            f.write(f'# analytical model being teste, supported are:\n')
+            f.write(f'# sbh, tully1, tully2, tully3\n')
             f.write(f'model = {p.model}\n')
-            f.write('number of points to randomly test')
+            f.write(f'# number of points to randomly test \n')
             f.write(f'test_amount = {p.test_amount}\n')
+            f.write(f'# range of x axis if no program is being read\n')
+            f.write(f'xmin = {p.xmin}\n')
+            f.write(f'xmax = {p.xmax}\n')
 
             f.write('\n # FMS90 specific options\n')
             f.write('# index of the trajectory to use, usually 1 because it has mor points.\n')
@@ -518,23 +532,32 @@ if __name__ == '__main__':
             f.write(f'The values taken are from trajectory: {params.trajectory}\n')
         f.write('\n')
 
-    # I want to read the external data from the given path
-    test_df =  read_test_data(params)
+    if params.program == 'none':
+        xmin = params.xmin
+        xmax = params.xmax
+        only_ref = True
+        test_df = {'coup': 0}
+    
+    else:
+        only_ref = False
+        # I want to read the external data from the given path
+        test_df =  read_test_data(params)
 
-    # print(test_df)
-    # create the reference dataframe for comparison plots
-    xmin = np.min(test_df['pos'])
-    xmax = np.max(test_df['pos'])
+        # print(test_df)
+        # create the reference dataframe for comparison plots
+        xmin = np.min(test_df['pos'])
+        xmax = np.max(test_df['pos'])
 
     reference_df = create_reference(xmin, xmax, params.model)
 
     # chose random points to catch any error
     # can also be an equal distribution of points so we sweep the whole range
     # save the point comparison in a text file
-    test_values(params.out_path, test_df, params.test_amount, params.model)
+    if not params.program == 'none':
+        test_values(params.out_path, test_df, params.test_amount, params.model)
 
     # save the plots of energies and coupling on differenf files, with both methods
-    plot_comparison(reference_df, test_df, params.out_path)
+    plot_comparison(reference_df, test_df, params.out_path, only_ref=only_ref)
 
 
 #TODO
