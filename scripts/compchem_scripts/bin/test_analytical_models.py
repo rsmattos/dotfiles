@@ -49,11 +49,14 @@ def calculate_values_at(x, model):
     elif model == 'tully3':
         H, dH = diab_T3(x)
         E, G, F = adiabat_T3(H, dH)
+    elif model == 'sbh':
+        E, G, F = adiabat_short_sbh(x)
     else:
         print('please chose a supported model:')
         print('tully1')
         print('tully2')
         print('tully3')
+        print('sbh')
 
         exit
 
@@ -207,6 +210,35 @@ def adiabat_T3(H, dH):
 
     return E, G, F12
 
+
+# Short 1D SBH
+def adiabat_short_sbh(x):
+    eps = 0.03
+    nu0 = 0.05
+    mass = 1
+
+    freq = 4000/219474.63068
+    coup = 0.7757824733
+
+    E = np.zeros(2)
+    G = np.zeros(2)
+    F12 = 0
+
+    eta = eps + coup*x
+    e_diff = np.sqrt(eta*eta + nu0*nu0)
+    f_diff = coup*eta/e_diff
+
+    E += 0.5*mass*freq*freq*x*x
+    E[0] -= e_diff
+    E[1] += e_diff
+    
+    G += mass*freq*freq*x
+    G[0] -= f_diff
+    G[1] += f_diff
+
+    F12 = -0.5*coup*nu0/(eta*eta + nu0*nu0)
+
+    return E, G, F12
 
 
 ################### READING TEST DATA
