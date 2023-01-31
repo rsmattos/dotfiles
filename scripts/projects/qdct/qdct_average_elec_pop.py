@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+#########################################################################################
+# script to read the population of each qdct trajectory 
+# outputs the average on a csv file and plot them
+#########################################################################################
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import sys
@@ -13,7 +18,10 @@ def read_trajs(N):
         if not os.path.isfile(file):
             continue
         
-        pops[i] = pd.read_table(file, delimiter=r'\s+', skiprows=1, index_col=0,
+        pops[i] = pd.read_table(file, 
+                                delimiter=r'\s+', 
+                                skiprows=1, 
+                                index_col=0,
                                 names=['time (au)', 'norm', 'state 1', 'state 2'],
                                 usecols=['time (au)', 'state 1', 'state 2']).dropna(axis=1)
 

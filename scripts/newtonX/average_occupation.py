@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+#########################################################################################
+# script to read the occupation of each NX trajectory 
+# outputs the average on a csv file and plot them
+#########################################################################################
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import sys
@@ -9,8 +14,12 @@ def read_trajs(N=False, path='TRAJECTORIES'):
 
     if N:
         for i in range(N):
-            occs['Traj'+str(i+1)] = pd.read_table(path+'/TRAJ'+str(i+1)+'/RESULTS/energies.dat', delimiter=r'\s+', 
-                                index_col=0, usecols=[0, 2], names=['time', 'state'], skiprows=2).dropna(axis=1)
+            occs['Traj'+str(i+1)] = pd.read_table(path+'/TRAJ'+str(i+1)+'/RESULTS/energies.dat',
+                                        delimiter=r'\s+',
+                                        index_col=0, 
+                                        usecols=[0, 2], 
+                                        names=['time', 'state'], 
+                                        skiprows=2).dropna(axis=1)
 
     occ = pd.concat(occs, axis=1)
 

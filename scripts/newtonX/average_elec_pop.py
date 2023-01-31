@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+#########################################################################################
+# script to read the population of each NX trajectory 
+# outputs the average on a csv file and plot them
+#########################################################################################
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import sys
@@ -7,8 +12,11 @@ import sys
 def read_trajs(N):
     pops = {}
     for i in range(N):
-        pops[i] = pd.read_table('TRAJECTORIES/TRAJ'+str(i+1)+'/RESULTS/populations.dat', delimiter=r'\s+', 
-                                index_col=0, names=['time', 'step', 'state 1', 'state 2'], skiprows=2).dropna(axis=1)[['state 1', 'state 2']]
+        pops[i] = pd.read_table('TRAJECTORIES/TRAJ'+str(i+1)+'/RESULTS/populations.dat', 
+                                delimiter=r'\s+', 
+                                index_col=0, 
+                                names=['time', 'step', 'state 1', 'state 2'], 
+                                skiprows=2).dropna(axis=1)[['state 1', 'state 2']]
 
     pop = pd.concat(pops, axis=1)
 
