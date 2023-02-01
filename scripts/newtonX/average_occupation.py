@@ -9,17 +9,16 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import sys
 
-def read_trajs(N=False, path='TRAJECTORIES'):
+def read_trajs(N, path='TRAJECTORIES'):
     occs = {}
 
-    if N:
-        for i in range(N):
-            occs['Traj'+str(i+1)] = pd.read_table(path+'/TRAJ'+str(i+1)+'/RESULTS/energies.dat',
-                                        delimiter=r'\s+',
-                                        index_col=0, 
-                                        usecols=[0, 2], 
-                                        names=['time', 'state'], 
-                                        skiprows=2).dropna(axis=1)
+    for i in range(N):
+        occs['Traj'+str(i+1)] = pd.read_table(path+'/TRAJ'+str(i+1)+'/RESULTS/energies.dat',
+                                    delimiter=r'\s+',
+                                    index_col=0, 
+                                    usecols=[0, 2], 
+                                    names=['time', 'state'], 
+                                    skiprows=2).dropna(axis=1)
 
     occ = pd.concat(occs, axis=1)
 
@@ -45,7 +44,6 @@ def read_trajs(N=False, path='TRAJECTORIES'):
     return
 
 if __name__ == '__main__':
-    N = False
     path='TRAJECTORIES'
 
     if len(sys.argv) == 2:
@@ -53,6 +51,8 @@ if __name__ == '__main__':
     elif len(sys.argv) == 3:
         N = int(sys.argv[1])
         path = str(sys.argv[2])
+    else:
+        N = int(input("Number of trajectories to consider: "))
 
     print('Averaging the occuparion of {} trajectories available in {}'.format(N, path))
     read_trajs(N, path)

@@ -1,12 +1,22 @@
 #!/usr/bin/env python3
 
+#########################################################################################
+# script to calculate how much each qdct trajectory deviates from norm conservation
+#########################################################################################
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
 df = pd.DataFrame()
 
 for i in range(1, 501):
-	df_tmp = pd.read_csv('single_TRAJ{}_elec_pop.dat'.format(i), sep='\s+', usecols=[0, 1], index_col=[0], skiprows=1, names=['time', i])
+	df_tmp = pd.read_csv('single_TRAJ{}_elec_pop.dat'.format(i), 
+						sep='\s+', 
+						usecols=[0, 1], 
+						index_col=[0], 
+						skiprows=1, 
+						names=['time', i])
+
 	df = pd.concat([df, df_tmp], axis=1)
 
 maximum_norm = df.max()

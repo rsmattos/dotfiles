@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 
+############################################################
+# script to generate initial positions for a NX simularion 
+# around a given position for the tully models             
+############################################################
+
 import numpy as np
 import random
 import sys
-
-############################################################
-#                                                          #
-# script to generate initial positions for a NX simularion #
-# around a given position for the tully models             #
-#                                                          #
-############################################################
 
 # general values
 ## variables

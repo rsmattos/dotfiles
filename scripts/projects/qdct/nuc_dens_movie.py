@@ -73,8 +73,8 @@ if __name__ == '__main__':
 
 
 	
-plt.plot(qdct_dens_df[time], label='qdct')
-plt.plot(nx_dens_df[time].dropna(),  label='nx')
-plt.plot(mctdh_dens_df[time], label='mctdh')
+# plt.plot(qdct_dens_df[time], label='qdct')
+# plt.plot(nx_dens_df[time].dropna(),  label='nx')
+# plt.plot(mctdh_dens_df[time], label='mctdh')
 
-plt.legend()
+# plt.legend()

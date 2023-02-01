@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
+####################################################################################################
+# script to check which trajectories concluded successfully and which didn't, using new NX.
+####################################################################################################
+
 import os
 
 def check_conclusion():
-# function to check which trajectories concluded successfully and which didn´t usint new NX.
     traj_root = 'TRAJECTORIES'
     successfull = []
     failed = []

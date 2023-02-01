@@ -11,7 +11,10 @@ def read_trajs(subset):
     for i in subset:
         print('reading file simulation_'+str(i)+'_elec_pop.dat')
         file = 'qdct_simulations/simulation_'+str(i)+'_elec_pop.dat'
-        pops[i] = pd.read_table(file, delimiter=r'\s+', skiprows=1, index_col=0,
+        pops[i] = pd.read_table(file, 
+                                delimiter=r'\s+', 
+                                skiprows=1, 
+                                index_col=0,
                                 names=['time (au)', 'norm', 'state 1', 'state 2'],
                                 usecols=['time (au)', 'state 1', 'state 2']).dropna(axis=1)
 

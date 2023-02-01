@@ -44,8 +44,11 @@ def read_trajs(N):
 
 if __name__ == '__main__':
 
-    N = int(sys.argv[1])
+    if len(sys.argv) == 2:
+        N = int(sys.argv[1])
+    else:
+        N = int(input("Number of trajectories to consider: "))
 
-    print(N)
+    print(f'Averaging the occuparion of {N} trajectories available in TRAJECTORIES')
 
     read_trajs(N)

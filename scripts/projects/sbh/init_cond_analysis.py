@@ -22,7 +22,7 @@ plt.legend('initial position distribution')
 plt.savefig('positions.png')
 plt.close()
 
-# # position distribution
+# # velocity distribution
 plt.hist(veloc['x'], bins=4, alpha=0.6, edgecolor='b')
 plt.legend('initial velocity distribution')
 plt.savefig('velocities.png')
