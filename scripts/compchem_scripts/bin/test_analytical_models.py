@@ -228,15 +228,31 @@ def adiabat_short_sbh(x):
     e_diff = np.sqrt(eta*eta + nu0*nu0)
     f_diff = coup*eta/e_diff
 
+    # print(f'pos value is: {x}')
+    # print(f'g value is: {coup}')
+    # print(f'nu0 value is: {nu0}')
+    # print(f'mass value is: {mass}')
+    # print(f'eta value is: {eta}')
+    # print(f'freq value is: {freq}')
+
     E += 0.5*mass*freq*freq*x*x
+    # print(f'E0 value is: {E[0]}')
+    # print(f'Ediff value is: {e_diff}')
     E[0] -= e_diff
     E[1] += e_diff
+    # print(f'E_S0 value is: {E[0]}')
+    # print(f'E_S1 value is: {E[1]}')
     
     G += mass*freq*freq*x
     G[0] -= f_diff
     G[1] += f_diff
 
     F12 = -0.5*coup*nu0/(eta*eta + nu0*nu0)
+
+    # print(f'numerator value is: {0.5*coup*nu0}')
+    # print(f'denominator value is: {eta*eta + nu0*nu0}')
+    # print(f'coupling value is: {F12}')
+    # print('')
 
     return E, G, F12
 
@@ -307,11 +323,11 @@ def read_test_data(params):
         return
 
 ################### COMPARISON
-def create_reference(params, step_size=0.1):
+def create_reference(params):
 # creates a dataframe with the reference values in the range provided
 # ideally the same range as the external values
 
-    positions = np.arange(params.xmin, params.xmax, step_size)
+    positions = np.arange(params.xmin, params.xmax, params.step_size)
 
     en_s0 = []
     en_s1 = []
@@ -377,13 +393,12 @@ def test_values(out_path, test_df, params, sample_points=False):
             en_s0_diff = en_s0_ref - en_s0_ex
             en_s1_diff = en_s1_ref - en_s1_ex
 
-            if abs(en_s0_diff) > 1e-6:
+            if abs(en_s0_diff) > 1e-6 or abs(en_s1_diff) > 1e-6:
                 problem_points.append(pos_ex)
-            elif abs(en_s1_diff) > 1e-6:
-                problem_points.append(pos_ex)
+                f.write('\n WARNING, significant differences between energies.\n')
 
             f.write(f'\n for position {pos_ex} A, ')
-            f.write(f'the values from the reference data and external data are: \n')
+            f.write(f'the values from the reference data and external data are:\n')
             f.write(f'en_S0(Eh): {en_s0_ref} \t {en_s0_ex}, ')
             f.write(f'with the difference: {en_s0_diff} \n')
             f.write(f'en_S1(Eh): {en_s1_ref} \t {en_s1_ex}, ')
@@ -398,15 +413,16 @@ def test_values(out_path, test_df, params, sample_points=False):
 
                 if abs(coup_diff) > 1e-5:
                     problem_points.append(pos_ex)
+                    f.write('\n WARNING, significant differences between couplings.\n')
 
-                f.write(f'coup:      {coup_ref} \t {coup_ex}, with the difference: {coup_diff} \n')
+                f.write(f'coup:      {coup_ref} \t {coup_ex}, with the difference: {coup_diff}\n')
 
         if len(problem_points) > 0:
-            f.write('\n WARNING, significant differences between reference and test data. \n')
-            f.write(f'The positions (Angs) that resulted in different values are \n')
+            f.write('\n WARNING, significant differences between reference and test data.\n')
+            f.write(f'The positions (Angs) that resulted in different values are\n')
             f.write(f'{problem_points} \n')
         else:
-            f.write('\n SUCCESS, there is little or no difference between the reference and test data \n')
+            f.write('\n SUCCESS, there is little or no difference between the reference and test data\n')
 
     return
 
@@ -449,6 +465,7 @@ class input_params:
         self.test_amount = 100
         self.xmin = -10
         self.xmax = 10
+        self.step_size = 0.1
         self.abs_coup = False
 
 def look_keywords(input_file, p):
@@ -476,6 +493,8 @@ def look_keywords(input_file, p):
                 p.xmin = int(line.split()[2])
             elif line.split()[0] == 'xmax':
                 p.xmax = int(line.split()[2])
+            elif line.split()[0] == 'step_size':
+                p.step_size = float(line.split()[2])
 
     if p.program == 'fms90':
         p.abs_coup = True
@@ -505,7 +524,9 @@ def print_input_template(input_file, p):
             f.write(f'# range of x axis if no program is being read\n')
             f.write(f'xmin = {p.xmin}\n')
             f.write(f'xmax = {p.xmax}\n')
-
+            f.write(f'# time step for the reference data to be plotted\n')
+            f.write(f'step_size = {p.step_size}\n')
+            
             f.write('\n # FMS90 specific options\n')
             f.write('# index of the trajectory to use, usually 1 because it has mor points.\n')
             f.write(f'trajectory = {p.trajectory}\n')
