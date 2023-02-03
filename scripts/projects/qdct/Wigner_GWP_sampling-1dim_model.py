@@ -20,7 +20,7 @@ import os
 
 # Universal Constants and Conversion 
 hbar = 1.0
-amu_to_au = 1822.8885150
+da_to_au = 1822.8885150
 cminv_to_au = 219474.63068
 ###
 
@@ -31,7 +31,7 @@ class parameters:
         self.p0 = 0
         self.del_x = 1
         self.del_p = 1
-        self.nuclear_mass = 1
+        self.nuclear_mass = da_to_au
         self.random_seed = ''
 
 def read_input():
@@ -50,15 +50,17 @@ def read_input():
         with open('geom.orig', 'r') as f:
             line = f.readline()
             p.x0 = float(line.split()[2])
-            p.nuclear_mass = float(line.split()[-1])
+            p.nuclear_mass = float(line.split()[-1])*da_to_au
 
         with open('veloc.orig', 'r') as f:
             line = f.readline()
-            p.p0 = float(line.split()[0])*p.nuclear_mass*amu_to_au
+            p.p0 = float(line.split()[0])*p.nuclear_mass
     else:
         p.x0 = float(input("Initial position (bohr): "))
         p.p0 = float(input("Initial momentum (a.u.): "))
-        p.nuclear_mass = float(input("Nuclear mass to be used (electron mass unit): "))
+        mass = input(f"Nuclear mass to be used (default {p.nuclear_mass} a.u.): ")
+        if not mass == '':
+            p.nuclear_mass = float(mass)
 
     # del_x can be an input or default value
     p.del_x = input("Width of the Gaussian in position (default is 20/p): ")
@@ -82,7 +84,7 @@ def read_input():
     print('parameters provided:')
     print('x0      =', p.x0)
     print('p0      =', p.p0)
-    print('mass    =', p.nuclear_mass*amu_to_au)
+    print('mass    =', p.nuclear_mass)
     print('del_x   =', p.del_x)
     print('del_p   =', p.del_p)
     print('npoints =', p.Ntrajs)
@@ -144,8 +146,8 @@ def write_new_init_cond(pos_accepted, mom_accepted, mass):
         for i in range(len(pos_accepted)):
             f.write(f'{pos_accepted[i]:>11.6f} \
 \t {mom_accepted[i]:>14.11f} \
-\t {mom_accepted[i]/(mass*amu_to_au):>14.11f} \
-\t {mass:>14.11f}\n')
+\t {mom_accepted[i]/(mass):>14.11f} \
+\t {mass/da_to_au:>14.11f}\n')
 
     return
 
@@ -157,10 +159,10 @@ def write_nx_ns_init_cond(pos_accepted, mom_accepted, mass):
 
         with open('TRAJECTORIES_NX/TRAJ'+str(i+1)+'/geom.orig', mode='w') as f:
             f.write('H \t 1.0 \t {:>11.6f} \t 0.000000 \t 0.000000 \t {:>14.11f} \n'
-                    .format(pos_accepted[i], mass))
+                    .format(pos_accepted[i], mass/da_to_au))
         with open('TRAJECTORIES_NX/TRAJ'+str(i+1)+'/veloc.orig', mode='w') as f:
             f.write('\t {:>14.11f} \t 0.000000 \t 0.000000 \n'
-                    .format(mom_accepted[i]/(mass*amu_to_au)))
+                    .format(mom_accepted[i]/(mass)))
     return
 
 ###############################################################################
@@ -224,7 +226,7 @@ if __name__ == '__main__':
         f.write('parameters provided:\n')
         f.write(f'x0      = {p.x0}\n')
         f.write(f'p0      = {p.p0}\n')
-        f.write(f'mass    = {p.nuclear_mass*amu_to_au}\n')
+        f.write(f'mass    = {p.nuclear_mass}\n')
         f.write(f'del_x   = {p.del_x}\n')
         f.write(f'del_p   = {p.del_p}\n')
         f.write(f'npoints = {p.Ntrajs}\n')
