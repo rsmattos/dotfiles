@@ -45,30 +45,6 @@ def read_input():
     # Number of trajectories to generate
     p.Ntrajs = int(input("Number of initial conditions to generate: "))
 
-    # tries to read central position, momentum and mass from input in NX format
-    if os.path.exists('geom.orig') and os.path.exists('veloc.orig'):
-        with open('geom.orig', 'r') as f:
-            line = f.readline()
-            p.x0 = float(line.split()[2])
-            p.nuclear_mass = float(line.split()[-1])*da_to_au
-
-        with open('veloc.orig', 'r') as f:
-            line = f.readline()
-            p.p0 = float(line.split()[0])*p.nuclear_mass
-    else:
-        p.x0 = float(input("Initial position (bohr): "))
-        p.p0 = float(input("Initial momentum (a.u.): "))
-        mass = input(f"Nuclear mass to be used (default {p.nuclear_mass} a.u.): ")
-        if not mass == '':
-            p.nuclear_mass = float(mass)
-
-    # del_x can be an input or default value
-    p.del_x = input("Width of the Gaussian in position (default is 20/p): ")
-    if p.del_x == '':
-        p.del_x = 20/p.p0
-    else:
-        p.del_x = float(p.del_x)
-
     # Choice of random seed for reproducibility
     p.random_seed = input("Define integer to use as seed for random number generation: " )
     if p.random_seed == '':
@@ -78,7 +54,54 @@ def read_input():
 
     np.random.seed(p.random_seed)
 
-    p.del_p = hbar / (2.0 * p.del_x)
+    model = input("is this for 1d sbh model? (y/n) ")
+    if model == 'y':
+        eps = 0.03
+        nu0 = 0.05
+        wmax = 4000.0/cminv_to_au
+        wc = wmax/3
+        Er = 0.0
+        arg = np.arctan(wmax/wc)
+
+        w_j = wc*np.tan(arg)
+        g_j = np.sqrt(p.nuclear_mass*Er*arg/np.pi)*w_j
+
+        zpe = 0.5*hbar*w_j
+
+        p.x0 = g_j/(p.nuclear_mass*w_j*w_j)
+        p.p0 = np.sqrt(hbar*p.nuclear_mass*w_j)
+        
+        p.del_x = np.sqrt(0.5*hbar/(p.nuclear_mass*w_j))
+        p.del_p = np.sqrt(0.5*hbar*p.nuclear_mass*w_j)
+
+    elif model == 'n':
+        # tries to read central position, momentum and mass from input in NX format
+        if os.path.exists('geom.orig') and os.path.exists('veloc.orig'):
+            with open('geom.orig', 'r') as f:
+                line = f.readline()
+                p.x0 = float(line.split()[2])
+                p.nuclear_mass = float(line.split()[-1])*da_to_au
+
+            with open('veloc.orig', 'r') as f:
+                line = f.readline()
+                p.p0 = float(line.split()[0])*p.nuclear_mass
+        else:
+            p.x0 = float(input("Initial position (bohr): "))
+            p.p0 = float(input("Initial momentum (a.u.): "))
+            mass = input(f"Nuclear mass to be used (default {p.nuclear_mass} a.u.): ")
+            if not mass == '':
+                p.nuclear_mass = float(mass)
+
+        # del_x can be an input or default value
+        p.del_x = input("Width of the Gaussian in position (default is 20/p): ")
+        if p.del_x == '':
+            p.del_x = 20/p.p0
+        else:
+            p.del_x = float(p.del_x)
+
+        p.del_p = hbar / (2.0 * p.del_x)
+    else:
+        print('choose y or n for the sbh model')
 
     print('')
     print('parameters provided:')
