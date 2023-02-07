@@ -7,6 +7,7 @@ scripts/submission/log_file
 scripts/submission/nohup.out
 scripts/submission/inpdir
 scripts/submission/submitted
+scripts/submission/job_limit
 
 # others
 scripts/compchem_scripts/bin/.vscode/*

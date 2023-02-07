@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sub_root="$( dirname -- "$0"; )"
+sub_root=/home/rafael/scripts/submission
 
 function update_inpdir
 {
@@ -59,4 +59,5 @@ do
     done
     update_inpdir
 done
+
 
