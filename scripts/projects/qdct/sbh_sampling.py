@@ -77,17 +77,32 @@ VV = np.zeros((NB, M))
 
 np.random.seed(42)                     # Random Number Seed
 
-for i in range(NB):
-    RR[i,:] = np.random.normal(R_Min[i], Sigma_R[i], M)
-    MM[i,:] = np.sqrt(hbar*WB[i] - WB[i]*WB[i]*RR[i,:]*RR[i,:])*\
-                (2*np.random.randint(0, 2, M)-1)
-    # MM[i,:] = np.random.normal(0.0, Sigma_P[i], M)
-    VV[i,:] = MM[i,:]/Mass
+mom_pos = 'correlated'
+## uncorrelated momentum and position
+if mom_pos == 'uncorrelated':
+    for i in range(NB):
+        RR[i,:] = np.random.normal(R_Min[i], Sigma_R[i], M)
+        MM[i,:] = np.random.normal(0.0, Sigma_P[i], M)
+        VV[i,:] = MM[i,:]/Mass
+
+## correlated momentum and position
+elif mom_pos == 'correlated':
+    for i in range(NB):
+        filter = hbar*WB[i]
+        for j in range(M):
+            check = filter + 1
+            while(check > filter):
+                pos = np.random.normal(R_Min[i], Sigma_R[i])
+                check = Mass*WB[i]*WB[i]*pos*pos
+            RR[i,j] = pos
+        MM[i,:] = np.sqrt(Mass)*np.sqrt(hbar*WB[i] - Mass*WB[i]*WB[i]*RR[i,:]*RR[i,:])*\
+                    (2*np.random.randint(0, 2, M)-1)
+        VV[i,:] = MM[i,:]/Mass
 
 for j in range(M):
     for i in range(NB):
-        myfile2.write("{:15.10f} {:15.10f} {:15.10f}".format(RR[i,j], MM[i,j], VV[i,j]))
-        myfile2.write('\n')
+        myfile2.write("{:15.10f} {:15.10f} {:15.10f}\n"
+               .format(RR[i,j], MM[i,j], VV[i,j]))
 
     myfile2.write('#\n')
 
