@@ -2,8 +2,6 @@ export SOFTWARES=~/Softwares
 export SCRIPTS=~/.dotfiles/scripts
 export SUBMISSION=$SCRIPTS/submission
 
-alias cdr='cd /data/Rafael'
-
 # Python and others
 export PATH=/home/rafael/.local/bin:$PATH
 
