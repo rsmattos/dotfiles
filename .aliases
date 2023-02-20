@@ -1,6 +1,6 @@
 # aliases
-alias l='ls -lh'
-alias la='ls -lah'
+alias l='ls -lh --group-directories-first'
+alias la='ls -lah --group-directories-first'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
