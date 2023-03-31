@@ -1,0 +1,31 @@
+
+
+a coord
+ired
+*
+b all def-SV(P)
+*
+eht
+
+
+
+scf
+iter
+300
+
+cc
+freeze
+*
+cbas
+*
+memory
+2000
+ricc2
+model adc(2)
+*
+exci
+irrep=a nexc=1 npre=2 nstart=3
+spectrum states=all operators=diplen
+*
+*
+*

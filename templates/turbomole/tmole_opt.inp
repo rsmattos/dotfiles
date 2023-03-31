@@ -1,0 +1,27 @@
+
+
+a coord
+ired
+*
+b all def-SV(P)
+*
+eht
+
+
+
+scf
+iter
+300
+
+cc
+freeze
+*
+cbas
+*
+memory
+2000
+ricc2
+geoopt mp2
+*
+*
+*
