@@ -117,9 +117,10 @@ prompt_end() {
   fi
   echo -n "%{%f%}"
   CURRENT_BG=''
-  
+ 
   # Adds the new line and start character
-  echo "\n \ue0b0";
+  echo -n "\n $SEGMENT_SEPARATOR"
+  
 }
 
 
