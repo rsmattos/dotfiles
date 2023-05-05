@@ -90,6 +90,7 @@ source $ZSH/oh-my-zsh.sh
 # else
 #   export EDITOR='mvim'
 # fi
+export EDITOR=/usr/bin/vim
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -107,3 +108,18 @@ source ~/.exports
 source ~/.aliases
 
 cdr
+
+prompt_end() {
+  if [[ -n $CURRENT_BG ]]; then
+    echo -n " %{%k%F{$CURRENT_BG}%}$SEGMENT_SEPARATOR"
+  else
+    echo -n "%{%k%}"
+  fi
+  echo -n "%{%f%}"
+  CURRENT_BG=''
+  
+  # Adds the new line and start character
+  echo "\n \ue0b0";
+}
+
+
